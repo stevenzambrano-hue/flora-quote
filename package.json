@@ -1,0 +1,22 @@
+{
+  "name": "flora-quote",
+  "version": "1.0.0",
+  "private": true,
+  "description": "FloraQuote - Flower Cost Management and Quotation System",
+  "scripts": {
+    "install:all": "npm install --prefix backend && npm install --prefix frontend",
+    "start:backend": "npm start --prefix backend",
+    "start:frontend": "npm start --prefix frontend",
+    "dev:backend": "npm run dev --prefix backend",
+    "start": "npm start --prefix backend & npm start --prefix frontend"
+  },
+  "keywords": [
+    "flora",
+    "quote",
+    "angular",
+    "express",
+    "supabase"
+  ],
+  "author": "",
+  "license": "ISC"
+}

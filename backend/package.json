@@ -1,0 +1,26 @@
+{
+  "name": "floraquote-backend",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Backend for FloraQuote - Flower Cost Management",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js"
+  },
+  "keywords": [
+    "nodejs",
+    "express",
+    "supabase",
+    "floraquote"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.0",
+    "express": "^4.18.2",
+    "morgan": "^1.10.0"
+  }
+}

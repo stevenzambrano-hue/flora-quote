@@ -1,0 +1,41 @@
+# Node.js
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Frontend (Angular specific)
+frontend/.angular/
+frontend/dist/
+frontend/out-tsc/
+frontend/bazel-out/
+frontend/.vscode/*
+!frontend/.vscode/settings.json
+!frontend/.vscode/tasks.json
+!frontend/.vscode/launch.json
+!frontend/.vscode/extensions.json
+
+# Backend (Express specific)
+backend/node_modules/
+backend/.env
+
+# IDEs and Editors
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Misc
+dist/
+tmp/
+out-tsc/
+coverage/
+.history/*
+/typings
+testem.log
+__screenshots__/
+.sass-cache/
+/connect.lock
+/libpeerconnection.log
+/bazel-out/
