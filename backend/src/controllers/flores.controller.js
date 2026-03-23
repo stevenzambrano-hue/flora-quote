@@ -12,7 +12,14 @@ export const getAll = async (req, res) => {
       .order('nombre', { ascending: true });
 
     if (error) throw error;
-    return res.json(data);
+    
+    // Map database field 'costo_alta_temporada' to 'costo_alta' for API
+    const mappedData = data.map(item => ({
+      ...item,
+      costo_alta: item.costo_alta_temporada
+    }));
+
+    return res.json(mappedData);
   } catch (error) {
     console.error('Error fetching flowers:', error);
     return res.status(500).json({ error: 'Failed to fetch flowers', details: error.message });
@@ -32,7 +39,12 @@ export const getById = async (req, res) => {
       if (error.code === 'PGRST116') return res.status(404).json({ error: 'Flower not found' });
       throw error;
     }
-    return res.json(data);
+
+    // Map database field 'costo_alta_temporada' to 'costo_alta' for API
+    return res.json({
+      ...data,
+      costo_alta: data.costo_alta_temporada
+    });
   } catch (error) {
     console.error(`Error fetching flower ${req.params.id}:`, error);
     return res.status(500).json({ error: 'Failed to fetch flower', details: error.message });
@@ -49,12 +61,20 @@ export const create = async (req, res) => {
 
     const { data, error } = await supabase
       .from('flores')
-      .insert([{ nombre, costo_regular, costo_alta, costo_local }])
+      .insert([{ 
+        nombre, 
+        costo_regular, 
+        costo_alta_temporada: costo_alta, 
+        costo_local 
+      }])
       .select()
       .single();
 
     if (error) throw error;
-    return res.status(201).json(data);
+    return res.status(201).json({
+      ...data,
+      costo_alta: data.costo_alta_temporada
+    });
   } catch (error) {
     console.error('Error creating flower:', error);
     return res.status(500).json({ error: 'Failed to create flower', details: error.message });
@@ -68,13 +88,21 @@ export const update = async (req, res) => {
 
     const { data, error } = await supabase
       .from('flores')
-      .update({ nombre, costo_regular, costo_alta, costo_local })
+      .update({ 
+        nombre, 
+        costo_regular, 
+        costo_alta_temporada: costo_alta, 
+        costo_local 
+      })
       .eq('id', id)
       .select()
       .single();
 
     if (error) throw error;
-    return res.json(data);
+    return res.json({
+      ...data,
+      costo_alta: data.costo_alta_temporada
+    });
   } catch (error) {
     console.error(`Error updating flower ${req.params.id}:`, error);
     return res.status(500).json({ error: 'Failed to update flower', details: error.message });

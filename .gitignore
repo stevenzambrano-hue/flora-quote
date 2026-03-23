@@ -39,3 +39,8 @@ __screenshots__/
 /connect.lock
 /libpeerconnection.log
 /bazel-out/
+
+# seedData
+frontend/src/assets/seedData.json
+backend/src/scripts/seedData.js
+
