@@ -34,8 +34,11 @@ import { SupabaseService } from '../../services/supabase.service';
             class="flex-1 px-4 py-3 rounded-xl border border-slate-200 bg-white outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all text-slate-700"
           >
             <option value="" disabled selected>Select an item...</option>
-            @for (item of catalogo(); track item.item) {
-              <option [value]="item.item">{{ item.item }} ({{ item.precio_unitario | currency }})</option>
+            @for (item of catalogo(); track item.id) {
+              <option [value]="item.id">
+                {{ item.nombre }} 
+                ({{ (quoteLogic.cotizacion().temporada === 'Regular' ? item.costo_regular : quoteLogic.cotizacion().temporada === 'Alta' ? item.costo_alta : item.costo_local) | currency }})
+              </option>
             }
           </select>
           <button 
@@ -70,7 +73,7 @@ import { SupabaseService } from '../../services/supabase.service';
                     <input 
                       type="number"
                       [ngModel]="detalle.cantidad"
-                      (ngModelChange)="quoteLogic.updateDetalle($index, $event)"
+                      (ngModelChange)="quoteLogic.updateDetalleRow($index, { cantidad: $event })"
                       min="1"
                       class="w-16 text-center px-2 py-1 rounded-lg border border-slate-200 focus:border-indigo-500 outline-none text-sm"
                     />
@@ -112,11 +115,11 @@ export class QuoteFormComponent {
     });
   }
 
-  addItem(itemName: string) {
-    if (!itemName) return;
-    const item = this.catalogo().find(i => i.item === itemName);
+  addItem(itemId: string) {
+    if (!itemId) return;
+    const item = this.catalogo().find(i => i.id === itemId);
     if (item) {
-      this.quoteLogic.addDetalle(item.item, item.precio_unitario);
+      this.quoteLogic.addDetalle(item, 'flower', this.quoteLogic.cotizacion().temporada);
     }
   }
 }
