@@ -18,6 +18,14 @@ export class SupabaseService {
     return this.http.post(`${this.apiUrl}/cotizaciones`, payload);
   }
 
+  getAllCotizaciones(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/cotizaciones`);
+  }
+
+  deleteCotizacion(id: string): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/cotizaciones/${id}`);
+  }
+
   /**
    * Generic CRUD Factory for Catalogs
    */

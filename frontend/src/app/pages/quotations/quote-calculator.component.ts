@@ -77,7 +77,7 @@ import { SupabaseService } from '../../services/supabase.service';
                <select #supplySelect (change)="addSupply(supplySelect.value); supplySelect.value=''" class="w-full bg-slate-50 border-slate-100 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-indigo-500/20 outline-none">
                  <option value="" disabled selected>Select Supply...</option>
                  @for (s of insumos(); track s.id) {
-                   <option [value]="s.id">{{ s.nombre }} ({{ s.costo_unitario | currency }})</option>
+                   <option [value]="s.id" [disabled]="isSupplyAdded(s.id)">{{ s.nombre }} ({{ s.costo_unitario | currency }})</option>
                  }
                </select>
             </div>
@@ -286,7 +286,12 @@ export class QuoteCalculatorComponent implements OnInit {
     }
   }
 
+  isSupplyAdded(id: string): boolean {
+    return this.quoteLogic.detalles().some(d => d.id_referencia === id && d.tipo === 'supply');
+  }
+
   addSupply(id: string) {
+    if (this.isSupplyAdded(id)) return;
     const item = this.insumos().find(s => s.id === id);
     if (item) {
       this.quoteLogic.addDetalle(item, 'supply', this.quoteLogic.cotizacion().temporada);

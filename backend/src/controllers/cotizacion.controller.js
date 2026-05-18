@@ -28,7 +28,7 @@ export const createFullQuotation = async (req, res) => {
       .insert([
         {
           cliente: cotizacion.cliente,
-          estado: 'Cotizado',
+          estado: 'Quoted',
           total_costo_materiales: calculos.costo_total_materiales,
           total_costo_mano_obra: cotizacion.mano_obra || 0,
           porcentaje_desperdicio: cotizacion.porcentaje_desperdicio || 0,
@@ -81,5 +81,36 @@ export const createFullQuotation = async (req, res) => {
       error: 'There was an error processing the quotation',
       details: error.message
     });
+  }
+};
+
+export const getAll = async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from('cotizaciones')
+      .select('*, cotizaciones_detalle(*)')
+      .order('fecha_creacion', { ascending: false });
+
+    if (error) throw error;
+    return res.json(data);
+  } catch (error) {
+    console.error('Error fetching quotations:', error);
+    return res.status(500).json({ error: 'Failed to fetch quotations' });
+  }
+};
+
+export const remove = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { error } = await supabase
+      .from('cotizaciones')
+      .delete()
+      .eq('id', id);
+
+    if (error) throw error;
+    return res.json({ message: 'Quotation deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting quotation:', error);
+    return res.status(500).json({ error: 'Failed to delete quotation' });
   }
 };
