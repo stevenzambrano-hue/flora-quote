@@ -27,10 +27,13 @@ export const createFullQuotation = async (req, res) => {
       .from('cotizaciones')
       .insert([
         {
-          ...cotizacion,
-          costo_total_materiales: calculos.costo_total_materiales,
-          costo_con_desperdicio: calculos.costo_con_desperdicio,
-          precio_venta: calculos.precio_venta
+          cliente: cotizacion.cliente,
+          estado: 'Cotizado',
+          total_costo_materiales: calculos.costo_total_materiales,
+          total_costo_mano_obra: cotizacion.mano_obra || 0,
+          porcentaje_desperdicio: cotizacion.porcentaje_desperdicio || 0,
+          margen_esperado: cotizacion.margen_esperado || 0,
+          precio_venta_final: calculos.precio_venta
         }
       ])
       .select()
@@ -41,14 +44,20 @@ export const createFullQuotation = async (req, res) => {
     const cotizacionId = quoteData.id;
 
     // 3. Link details to generated quotation ID
-    const detallesConId = detalles.map(detalle => ({
-      ...detalle,
-      cotizacion_id: cotizacionId
+    const detallesConId = detalles.map((detalle, index) => ({
+      cotizacion_id: cotizacionId,
+      tipo_item: detalle.tipo,
+      item_id: detalle.id_referencia || null,
+      descripcion: detalle.item,
+      cantidad: detalle.cantidad,
+      precio_unitario: detalle.precio_unitario,
+      subtotal: detalle.subtotal,
+      orden_linea: index + 1
     }));
 
     // 4. Batch insert Details
     const { error: detallesError } = await supabase
-      .from('cotizacion_detalles')
+      .from('cotizaciones_detalle')
       .insert(detallesConId);
 
     if (detallesError) {

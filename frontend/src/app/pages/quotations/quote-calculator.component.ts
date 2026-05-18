@@ -20,7 +20,8 @@ import { SupabaseService } from '../../services/supabase.service';
             <div class="flex-1 w-full">
               <label class="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-3 ml-1">Client / Project Name</label>
               <input 
-                [(ngModel)]="quoteLogic.cotizacion().cliente"
+                [ngModel]="quoteLogic.cotizacion().cliente"
+                (ngModelChange)="quoteLogic.cotizacion.update(updateCotizacion('cliente', $event))"
                 class="w-full bg-slate-50 border-none rounded-2xl px-6 py-4 text-slate-800 placeholder-slate-300 focus:ring-4 focus:ring-indigo-500/10 transition-all text-xl font-medium"
                 placeholder="Ex. Smith Wedding - Floral Design"
               />
@@ -186,12 +187,12 @@ import { SupabaseService } from '../../services/supabase.service';
                      <span>Waste Compensation</span>
                      <span class="text-indigo-300">{{ quoteLogic.cotizacion().porcentaje_desperdicio }}%</span>
                    </div>
-                   <input type="range" min="0" max="50" [(ngModel)]="quoteLogic.cotizacion().porcentaje_desperdicio" class="w-full accent-indigo-400 h-1.5 bg-indigo-800 rounded-lg appearance-none cursor-pointer" />
+                   <input type="range" min="0" max="50" [ngModel]="quoteLogic.cotizacion().porcentaje_desperdicio" (ngModelChange)="quoteLogic.cotizacion.update(updateCotizacion('porcentaje_desperdicio', $event))" class="w-full accent-indigo-400 h-1.5 bg-indigo-800 rounded-lg appearance-none cursor-pointer" />
                  </div>
 
                  <div>
                     <label class="block text-xs font-bold mb-3 uppercase tracking-wider">Labor Cost ($)</label>
-                    <input type="number" [(ngModel)]="quoteLogic.cotizacion().mano_obra" class="w-full bg-indigo-800/50 border-none rounded-xl px-4 py-3 text-white outline-none focus:ring-2 focus:ring-indigo-400 transition-all" />
+                    <input type="number" [ngModel]="quoteLogic.cotizacion().mano_obra" (ngModelChange)="quoteLogic.cotizacion.update(updateCotizacion('mano_obra', $event))" class="w-full bg-indigo-800/50 border-none rounded-xl px-4 py-3 text-white outline-none focus:ring-2 focus:ring-indigo-400 transition-all" />
                  </div>
 
                  <div>
@@ -199,7 +200,7 @@ import { SupabaseService } from '../../services/supabase.service';
                      <span>Target Margin</span>
                      <span class="text-indigo-300">{{ quoteLogic.cotizacion().margen_esperado }}%</span>
                    </div>
-                   <input type="range" min="5" max="90" [(ngModel)]="quoteLogic.cotizacion().margen_esperado" class="w-full accent-emerald-400 h-1.5 bg-indigo-800 rounded-lg appearance-none cursor-pointer" />
+                   <input type="range" min="5" max="90" [ngModel]="quoteLogic.cotizacion().margen_esperado" (ngModelChange)="quoteLogic.cotizacion.update(updateCotizacion('margen_esperado', $event))" class="w-full accent-emerald-400 h-1.5 bg-indigo-800 rounded-lg appearance-none cursor-pointer" />
                  </div>
                </div>
             </div>
@@ -265,6 +266,8 @@ export class QuoteCalculatorComponent implements OnInit {
     this.loadCatalogs();
   }
 
+  updateCotizacion = (key: string, value: any) => (prev: any) => ({ ...prev, [key]: value });
+
   loadCatalogs() {
     this.supabase.getAll('flores').subscribe(res => this.flores.set(res));
     this.supabase.getAll('insumos').subscribe(res => this.insumos.set(res));
@@ -292,11 +295,13 @@ export class QuoteCalculatorComponent implements OnInit {
 
   save() {
     const payload = {
-      ...this.quoteLogic.cotizacion(),
-      items: this.quoteLogic.detalles(),
-      total_materiales: this.quoteLogic.subtotal(),
-      total_con_desperdicio: this.quoteLogic.totalConDesperdicio(),
-      precio_final: this.quoteLogic.precioVenta()
+      cotizacion: {
+        ...this.quoteLogic.cotizacion(),
+        costo_total_materiales: this.quoteLogic.subtotal(),
+        costo_con_desperdicio: this.quoteLogic.totalConDesperdicio(),
+        precio_venta: this.quoteLogic.precioVenta()
+      },
+      detalles: this.quoteLogic.detalles()
     };
 
     this.supabase.guardarCotizacion(payload).subscribe({
