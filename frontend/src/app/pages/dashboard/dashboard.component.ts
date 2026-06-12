@@ -78,6 +78,12 @@ import { RouterModule } from '@angular/router';
            <h4>Accessories</h4>
            <p>Additional items and ribbon pricing.</p>
         </a>
+
+        <a routerLink="/rendimientos" class="catalog-card bg-fuchsia-50 text-fuchsia-900 border-fuchsia-100">
+           <div class="icon-bg bg-fuchsia-100">⏱️</div>
+           <h4>Productivity Rates</h4>
+           <p>Labor productivity and hourly rates.</p>
+        </a>
       </div>
     </div>
   `,

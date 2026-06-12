@@ -27,6 +27,25 @@ export class SupabaseService {
   }
 
   /**
+   * Rendimientos
+   */
+  getRendimientos(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/rendimientos`);
+  }
+
+  createRendimiento(payload: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/rendimientos`, payload);
+  }
+
+  updateRendimiento(id: string, payload: any): Observable<any> {
+    return this.http.put(`${this.apiUrl}/rendimientos/${id}`, payload);
+  }
+
+  deleteRendimiento(id: string): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/rendimientos/${id}`);
+  }
+
+  /**
    * Generic CRUD Factory for Catalogs
    */
   getAll(resource: string, params?: any): Observable<any[]> {

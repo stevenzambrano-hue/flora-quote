@@ -9,6 +9,7 @@ import cajasRoutes from './routes/cajas.routes.js';
 import coloresRoutes from './routes/colores.routes.js';
 import insumosRoutes from './routes/insumos.routes.js';
 import complementosRoutes from './routes/complementos.routes.js';
+import rendimientoRoutes from './routes/rendimiento.routes.js';
 
 const app = express();
 
@@ -19,6 +20,7 @@ app.use(express.json());
 
 // Main Routes
 app.use('/api/cotizaciones', cotizacionRoutes);
+app.use('/api/rendimientos', rendimientoRoutes);
 
 // Catalog Routes (v1)
 app.use('/api/v1/flores', floresRoutes);

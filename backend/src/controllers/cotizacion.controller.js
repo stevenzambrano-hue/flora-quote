@@ -7,13 +7,24 @@ export const createFullQuotation = async (req, res) => {
   const { cotizacion, detalles } = req.body;
   
   try {
+    // Validar que no haya valores negativos clave
+    if (cotizacion.mano_obra < 0 || cotizacion.porcentaje_desperdicio < 0 || cotizacion.margen_esperado < 0) {
+      return res.status(400).json({ success: false, error: 'No se permiten valores negativos en los costos o márgenes.' });
+    }
+    
+    // Validar que no haya cantidades ni precios negativos en los detalles
+    const tieneNegativos = detalles.some(d => d.cantidad < 1 || d.precio_unitario < 0);
+    if (tieneNegativos) {
+      return res.status(400).json({ success: false, error: 'Las cantidades deben ser mayores a 0 y los precios no pueden ser negativos.' });
+    }
+
     const { data: cotizacionId, error } = await supabase.rpc('guardar_cotizacion_completa', {
       p_cliente: cotizacion.cliente,
-      p_total_materiales: calculos.costo_total_materiales,
+      p_total_materiales: cotizacion.costo_total_materiales || 0,
       p_total_mano_obra: cotizacion.mano_obra || 0,
       p_porcentaje_desperdicio: cotizacion.porcentaje_desperdicio || 0,
       p_margen_esperado: cotizacion.margen_esperado || 0,
-      p_precio_venta_final: calculos.precio_venta,
+      p_precio_venta_final: cotizacion.precio_venta || 0,
       p_detalles: detalles
     });
 

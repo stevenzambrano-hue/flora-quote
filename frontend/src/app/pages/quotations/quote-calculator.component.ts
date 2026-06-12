@@ -124,8 +124,9 @@ import { SupabaseService } from '../../services/supabase.service';
                     <td class="px-4 py-6 text-center">
                       <input 
                         type="number"
+                        min="1"
                         [ngModel]="d.cantidad"
-                        (ngModelChange)="quoteLogic.updateDetalleRow($index, { cantidad: $event })"
+                        (ngModelChange)="quoteLogic.updateDetalleRow($index, { cantidad: $event < 1 ? 1 : $event })"
                         class="w-16 bg-slate-100/50 border-none rounded-xl px-3 py-2 text-center text-sm font-bold focus:ring-2 focus:ring-indigo-500 transition-all outline-none"
                       />
                     </td>
@@ -133,8 +134,10 @@ import { SupabaseService } from '../../services/supabase.service';
                       <div class="flex flex-col items-end">
                         <input 
                           type="number"
+                          min="0"
+                          step="0.01"
                           [ngModel]="d.precio_unitario"
-                          (ngModelChange)="quoteLogic.updateDetalleRow($index, { precio_unitario: $event })"
+                          (ngModelChange)="quoteLogic.updateDetalleRow($index, { precio_unitario: $event < 0 ? 0 : $event })"
                           class="w-24 bg-transparent border-none text-right font-medium focus:ring-2 focus:ring-indigo-500/20 rounded px-1 outline-none transition-all"
                           [class.text-amber-600]="d.es_precio_manual"
                           [class.font-black]="d.es_precio_manual"
@@ -192,7 +195,7 @@ import { SupabaseService } from '../../services/supabase.service';
 
                  <div>
                     <label class="block text-xs font-bold mb-3 uppercase tracking-wider">Labor Cost ($)</label>
-                    <input type="number" [ngModel]="quoteLogic.cotizacion().mano_obra" (ngModelChange)="quoteLogic.cotizacion.update(updateCotizacion('mano_obra', $event))" class="w-full bg-indigo-800/50 border-none rounded-xl px-4 py-3 text-white outline-none focus:ring-2 focus:ring-indigo-400 transition-all" />
+                    <input type="number" min="0" [ngModel]="quoteLogic.cotizacion().mano_obra" (ngModelChange)="quoteLogic.cotizacion.update(updateCotizacion('mano_obra', $event < 0 ? 0 : $event))" class="w-full bg-indigo-800/50 border-none rounded-xl px-4 py-3 text-white outline-none focus:ring-2 focus:ring-indigo-400 transition-all" />
                  </div>
 
                  <div>
