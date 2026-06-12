@@ -1,5 +1,6 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { ActivatedRoute } from '@angular/router';
 import { QuoteCalculatorComponent } from './quote-calculator.component';
 import { QuoteHistoryComponent } from './quote-history.component';
 
@@ -17,7 +18,7 @@ import { QuoteHistoryComponent } from './quote-history.component';
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
               <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
             </svg>
-            Back to History
+            Go to History
           </button>
         </div>
         <app-quote-calculator></app-quote-calculator>
@@ -26,7 +27,17 @@ import { QuoteHistoryComponent } from './quote-history.component';
   `,
   styles: []
 })
-export class QuotationsComponent {
-  // 'history' or 'calculator'
+export class QuotationsComponent implements OnInit {
   view = signal<'history' | 'calculator'>('history');
+  private route = inject(ActivatedRoute);
+
+  ngOnInit() {
+    this.route.queryParams.subscribe(params => {
+      if (params['tab'] === 'calculator') {
+        this.view.set('calculator');
+      } else {
+        this.view.set('history');
+      }
+    });
+  }
 }

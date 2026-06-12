@@ -13,17 +13,22 @@ import { RouterModule } from '@angular/router';
 
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         <!-- Cotizaciones (Grand Card) -->
-        <a routerLink="/quotations" class="lg:col-span-2 group relative overflow-hidden bg-indigo-600 p-8 rounded-3xl shadow-xl shadow-indigo-100 hover:shadow-indigo-200 transition-all active:scale-95 flex flex-col justify-between h-64 border border-indigo-500">
+        <div class="lg:col-span-2 relative overflow-hidden bg-indigo-600 p-8 rounded-3xl shadow-xl shadow-indigo-100 flex flex-col justify-between h-64 border border-indigo-500">
           <div class="z-10 text-white">
              <div class="p-3 bg-white/10 w-fit rounded-xl mb-6 backdrop-blur-sm border border-white/20">📝</div>
              <h3 class="text-2xl font-bold mb-2">Quotation Terminal</h3>
              <p class="text-indigo-100/70 max-w-xs lowercase first-letter:uppercase">Calculate flower costs, labor and expected profit in real-time.</p>
           </div>
-          <div class="z-10 text-right">
-             <span class="inline-flex items-center gap-2 bg-white text-indigo-600 px-6 py-2 rounded-full font-bold shadow-lg">New Quote</span>
+          <div class="z-10 flex gap-4 mt-auto">
+             <a [routerLink]="['/quotations']" [queryParams]="{tab: 'calculator'}" class="inline-flex items-center gap-2 bg-white text-indigo-600 hover:bg-indigo-50 px-6 py-2 rounded-full font-bold shadow-lg transition-all active:scale-95">
+               New Quote
+             </a>
+             <a [routerLink]="['/quotations']" [queryParams]="{tab: 'history'}" class="inline-flex items-center gap-2 bg-indigo-500/50 hover:bg-indigo-500/70 text-white border border-indigo-400 px-6 py-2 rounded-full font-bold shadow-lg transition-all active:scale-95">
+               History
+             </a>
           </div>
           <div class="absolute -right-20 -top-20 w-64 h-64 bg-white/5 rounded-full blur-3xl"></div>
-        </a>
+        </div>
 
         <!-- Master Data Stats -->
         <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-100 flex flex-col justify-between border-b-4 border-b-emerald-400">
