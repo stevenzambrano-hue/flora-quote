@@ -81,6 +81,32 @@ import { SupabaseService } from '../../services/supabase.service';
                  }
                </select>
             </div>
+             <!-- Add Box -->
+             <div class="bg-white p-6 rounded-3xl border border-amber-100 shadow-sm hover:shadow-md transition-shadow md:col-span-2">
+                <div class="flex items-center gap-4 mb-4">
+                  <div class="w-12 h-12 bg-amber-50 rounded-2xl flex items-center justify-center text-amber-500 text-xl font-bold">📦</div>
+                  <div>
+                    <h4 class="text-sm font-bold text-slate-800 tracking-tight">Select Box</h4>
+                    <p class="text-xs text-slate-400">Flower box from catalog — cost added to total</p>
+                  </div>
+                  @if (quoteLogic.cotizacion().caja_id) {
+                    <button
+                      (click)="clearBox()"
+                      class="ml-auto px-3 py-1.5 rounded-lg bg-rose-50 text-rose-400 hover:bg-rose-100 text-xs font-bold transition-all"
+                    >✕ Remove</button>
+                  }
+                </div>
+                <select
+                  [ngModel]="quoteLogic.cotizacion().caja_id"
+                  (ngModelChange)="selectBox($event)"
+                  class="w-full bg-slate-50 border-slate-100 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-amber-400/30 outline-none"
+                >
+                  <option [ngValue]="null">No box selected</option>
+                  @for (b of cajas(); track b.id) {
+                    <option [value]="b.id">{{ b.nombre }} — {{ b.costo | currency }} ({{ b.tallos }} stems)</option>
+                  }
+                </select>
+             </div>
           </div>
 
           <!-- DATA TABLE -->
@@ -102,11 +128,11 @@ import { SupabaseService } from '../../services/supabase.service';
                     <td class="pl-8 py-6">
                       <div class="flex flex-col">
                         <span class="text-slate-800 font-bold tracking-tight text-lg">{{ d.item }}</span>
-                        <span class="text-[10px] font-bold text-slate-400 uppercase mt-1">{{ d.tipo === 'flower' ? 'Flower' : 'Supply' }}</span>
+                        <span class="text-[10px] font-bold text-slate-400 uppercase mt-1">{{ d.tipo_item === 'flower' ? 'Flower' : 'Supply' }}</span>
                       </div>
                     </td>
                     <td class="px-4 py-6 text-center">
-                      @if (d.tipo === 'flower') {
+                      @if (d.tipo_item === 'flower') {
                         <select 
                           [ngModel]="d.color"
                           (ngModelChange)="quoteLogic.updateDetalleRow($index, { color: $event })"
@@ -218,6 +244,12 @@ import { SupabaseService } from '../../services/supabase.service';
                     <span class="text-xs font-bold text-slate-400 uppercase tracking-widest">Waste Cost</span>
                     <span class="font-bold text-slate-700">+ {{ (quoteLogic.totalConDesperdicio() - quoteLogic.subtotal()) | currency }}</span>
                  </div>
+                 @if (quoteLogic.cotizacion().costo_caja && quoteLogic.cotizacion().costo_caja! > 0) {
+                   <div class="flex justify-between items-center py-4 border-b border-slate-50">
+                     <span class="text-xs font-bold text-amber-500 uppercase tracking-widest">📦 Box Cost</span>
+                     <span class="font-bold text-amber-600">{{ quoteLogic.cotizacion().costo_caja | currency }}</span>
+                   </div>
+                 }
                  <div class="flex justify-between items-center py-4 font-black">
                     <span class="text-xs text-indigo-500 uppercase tracking-widest">Suggested Price</span>
                     <span class="text-3xl text-indigo-600 tracking-tighter">{{ quoteLogic.precioVenta() | currency }}</span>
@@ -264,6 +296,7 @@ export class QuoteCalculatorComponent implements OnInit {
   flores = signal<any[]>([]);
   insumos = signal<any[]>([]);
   colores = signal<any[]>([]);
+  cajas = signal<any[]>([]);
 
   ngOnInit() {
     this.loadCatalogs();
@@ -275,6 +308,7 @@ export class QuoteCalculatorComponent implements OnInit {
     this.supabase.getAll('flores').subscribe(res => this.flores.set(res));
     this.supabase.getAll('insumos').subscribe(res => this.insumos.set(res));
     this.supabase.getAll('colores').subscribe(res => this.colores.set(res));
+    this.supabase.getAll('cajas').subscribe(res => this.cajas.set(res));
   }
 
   changeSeason(s: 'Regular' | 'Alta' | 'Local') {
@@ -290,7 +324,7 @@ export class QuoteCalculatorComponent implements OnInit {
   }
 
   isSupplyAdded(id: string): boolean {
-    return this.quoteLogic.detalles().some(d => d.id_referencia === id && d.tipo === 'supply');
+    return this.quoteLogic.detalles().some(d => d.id_referencia === id && d.tipo_item === 'supply');
   }
 
   addSupply(id: string) {
@@ -299,6 +333,21 @@ export class QuoteCalculatorComponent implements OnInit {
     if (item) {
       this.quoteLogic.addDetalle(item, 'supply', this.quoteLogic.cotizacion().temporada);
     }
+  }
+
+  selectBox(id: string | null) {
+    if (!id) {
+      this.quoteLogic.cotizacion.update(prev => ({ ...prev, caja_id: null, costo_caja: 0 }));
+      return;
+    }
+    const box = this.cajas().find(b => b.id === id);
+    if (box) {
+      this.quoteLogic.cotizacion.update(prev => ({ ...prev, caja_id: box.id, costo_caja: box.costo }));
+    }
+  }
+
+  clearBox() {
+    this.quoteLogic.cotizacion.update(prev => ({ ...prev, caja_id: null, costo_caja: 0 }));
   }
 
   save() {
@@ -311,6 +360,9 @@ export class QuoteCalculatorComponent implements OnInit {
       },
       detalles: this.quoteLogic.detalles()
     };
+
+    // DEBUG: verificar que caja_id y costo_caja lleguen al payload
+    console.log('📦 Payload enviado:', JSON.stringify(payload.cotizacion, null, 2));
 
     this.supabase.guardarCotizacion(payload).subscribe({
       next: () => {

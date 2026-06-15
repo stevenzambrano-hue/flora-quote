@@ -11,7 +11,9 @@ export class QuoteLogicService {
     porcentaje_desperdicio: 10,
     mano_obra: 0,
     margen_esperado: 35,
-    temporada: 'Regular'
+    temporada: 'Regular',
+    caja_id: null,
+    costo_caja: 0
   });
 
   // Details list
@@ -19,7 +21,9 @@ export class QuoteLogicService {
 
   // Derived calculations via computed signals
   public subtotal = computed(() => {
-    return this.detalles().reduce((acc, curr) => acc + curr.subtotal, 0);
+    const itemsTotal = this.detalles().reduce((acc, curr) => acc + curr.subtotal, 0);
+    const boxCost = this.cotizacion().costo_caja ?? 0;
+    return itemsTotal + boxCost;
   });
 
   public totalConDesperdicio = computed(() => {
@@ -46,7 +50,7 @@ export class QuoteLogicService {
     const nuevo: any = {
       id_referencia: item.id,
       item: item.nombre,
-      tipo: type,
+      tipo_item: type,
       precio_original: defaultPrice,
       precio_unitario: defaultPrice,
       cantidad: 1,
@@ -82,7 +86,7 @@ export class QuoteLogicService {
   applySeasonChange(newSeason: string, catalogFlores: any[]) {
     this.detalles.update(prev => {
       return prev.map(detalle => {
-        if (detalle.tipo === 'flower' && !detalle.es_precio_manual) {
+        if (detalle.tipo_item === 'flower' && !detalle.es_precio_manual) {
           const item = catalogFlores.find(f => f.id === detalle.id_referencia);
           if (item) {
             const newPrice = newSeason === 'Regular' ? item.costo_regular : newSeason === 'Alta' ? item.costo_alta : item.costo_local;
@@ -116,7 +120,9 @@ export class QuoteLogicService {
       temporada: 'Regular',
       porcentaje_desperdicio: 10,
       mano_obra: 0,
-      margen_esperado: 35
+      margen_esperado: 35,
+      caja_id: null,
+      costo_caja: 0
     });
   }
 }

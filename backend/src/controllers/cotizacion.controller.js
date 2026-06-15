@@ -25,14 +25,15 @@ export const createFullQuotation = async (req, res) => {
       p_porcentaje_desperdicio: cotizacion.porcentaje_desperdicio || 0,
       p_margen_esperado: cotizacion.margen_esperado || 0,
       p_precio_venta_final: cotizacion.precio_venta || 0,
-      p_detalles: detalles
+      p_detalles: detalles,
+      p_caja_id: cotizacion.caja_id || null,    // <-- ENVIAR CAJA_ID AL RPC
+      p_costo_caja: cotizacion.costo_caja || 0  // <-- ENVIAR COSTO AL RPC
     });
 
     if (error) throw error;
 
     return res.status(201).json({ 
       success: true, 
-      message: 'Quotation created successfully', 
       id: cotizacionId 
     });
 

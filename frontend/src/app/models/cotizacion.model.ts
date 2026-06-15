@@ -3,7 +3,7 @@ export interface DetalleCotizacion {
   cotizacion_id?: string;
   id_referencia?: string;
   item: string;
-  tipo: 'flower' | 'supply';
+  tipo_item: 'flower' | 'supply';
   cantidad: number;
   precio_original: number;
   precio_unitario: number;
@@ -19,6 +19,8 @@ export interface Cotizacion {
   porcentaje_desperdicio: number;
   mano_obra: number;
   margen_esperado: number;
+  caja_id?: string | null;
+  costo_caja?: number;
   costo_total_materiales?: number;
   costo_con_desperdicio?: number;
   precio_venta?: number;

@@ -91,6 +91,7 @@ import { SupabaseService } from '../../services/supabase.service';
                 <th class="px-6 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">Total Cost</th>
                 <th class="px-6 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">Sale Price</th>
                 <th class="px-6 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">Profit</th>
+                <th class="px-6 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">Box</th>
                 <th class="px-6 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">Status</th>
                 <th class="px-6 py-5 text-right"></th>
               </tr>
@@ -118,6 +119,16 @@ import { SupabaseService } from '../../services/supabase.service';
                       <span class="text-sm font-black text-emerald-500">{{ q.precio_venta_final - (q.total_costo_materiales + q.total_costo_mano_obra) | currency }}</span>
                       <span class="text-[10px] font-bold text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full mt-1">{{ q.margen_esperado }}%</span>
                     </div>
+                  </td>
+                  <td class="px-6 py-6 text-center">
+                    @if (q.costo_caja && q.costo_caja > 0) {
+                      <span class="inline-flex flex-col items-center gap-0.5">
+                        <span class="text-lg">📦</span>
+                        <span class="text-[10px] font-black text-amber-500">{{ q.costo_caja | currency }}</span>
+                      </span>
+                    } @else {
+                      <span class="text-slate-200 text-sm">—</span>
+                    }
                   </td>
                   <td class="px-6 py-6 text-center">
                     <span 
@@ -222,9 +233,19 @@ import { SupabaseService } from '../../services/supabase.service';
                 <span>Labor Cost</span>
                 <span>+ {{ selectedQuote().total_costo_mano_obra | currency }}</span>
               </div>
+              @if (selectedQuote().costo_caja && selectedQuote().costo_caja > 0) {
+                <div class="flex justify-between text-sm font-bold text-amber-500 bg-amber-50 px-3 py-2 rounded-xl">
+                  <span>📦 Box Cost</span>
+                  <span>+ {{ selectedQuote().costo_caja | currency }}</span>
+                </div>
+              }
               <div class="flex justify-between text-sm font-bold text-slate-500">
                 <span>Applied Waste</span>
                 <span>{{ selectedQuote().porcentaje_desperdicio }}%</span>
+              </div>
+              <div class="flex justify-between items-center pt-3 border-t border-slate-100">
+                <span class="text-xs font-black text-indigo-500 uppercase tracking-widest">Final Sale Price</span>
+                <span class="text-xl font-black text-indigo-600">{{ selectedQuote().precio_venta_final | currency }}</span>
               </div>
             </div>
 
