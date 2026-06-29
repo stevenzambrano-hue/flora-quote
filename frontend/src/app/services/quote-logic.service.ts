@@ -1,5 +1,6 @@
 import { Injectable, computed, signal } from '@angular/core';
 import { Cotizacion, DetalleCotizacion } from '../models/cotizacion.model';
+import { Rendimiento } from '../models/rendimiento.model';
 
 @Injectable({
   providedIn: 'root'
@@ -18,6 +19,30 @@ export class QuoteLogicService {
 
   // Details list
   public detalles = signal<DetalleCotizacion[]>([]);
+
+  // Rendimientos catalog (loaded externally by the calculator component)
+  public rendimientos = signal<Rendimiento[]>([]);
+
+  /**
+   * Returns the labor cost for the first rendimiento based on the given season.
+   * Falls back to 0 if no rendimientos are loaded.
+   */
+  getLaborCostForSeason(season: 'Regular' | 'Alta' | 'Local'): number {
+    const first = this.rendimientos()[0];
+    if (!first) return 0;
+    if (season === 'Regular') return first.regular;
+    if (season === 'Alta') return first.alta_temporada;
+    return first.local;
+  }
+
+  /**
+   * Applies the labor cost from the first rendimiento for the current season.
+   */
+  applyLaborCostFromRendimiento() {
+    const season = this.cotizacion().temporada;
+    const laborCost = this.getLaborCostForSeason(season);
+    this.cotizacion.update(prev => ({ ...prev, mano_obra: laborCost }));
+  }
 
   // Derived calculations via computed signals
   public subtotal = computed(() => {

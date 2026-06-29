@@ -9,20 +9,7 @@ import { QuoteHistoryComponent } from './quote-history.component';
   selector: 'app-quotations',
   standalone: true,
   imports: [CommonModule, QuoteCalculatorComponent, QuoteHistoryComponent],
-  template: `
-    <div class="h-full w-full">
-      @if (currentView() === 'history') {
-        <app-quote-history (onNewQuote)="viewOverride.set('calculator')"></app-quote-history>
-      } @else {
-        <div class="p-4">
-          <button (click)="viewOverride.set('history')" class="mb-4 px-6 py-2 bg-white text-slate-500 rounded-xl shadow-sm hover:shadow-md hover:text-indigo-600 transition-all font-bold text-sm flex items-center gap-2">
-            Go to History
-          </button>
-        </div>
-        <app-quote-calculator></app-quote-calculator>
-      }
-    </div>
-  `
+  templateUrl: './quotations.component.html'
 })
 export class QuotationsComponent {
   private route = inject(ActivatedRoute);

@@ -8,57 +8,7 @@ import { GenericTableComponent, TableColumn } from '../../shared/components/gene
   selector: 'app-colores',
   standalone: true,
   imports: [CommonModule, GenericTableComponent, ReactiveFormsModule, FormsModule],
-  template: `
-    <div class="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      
-      <!-- List View -->
-      @if (!isEditing()) {
-        <app-generic-table 
-          title="Colors Master List"
-          [data]="items()"
-          [columns]="cols"
-          (onAdd)="openCreate()"
-          (onEdit)="openEdit($event)"
-          (onDelete)="deleteItem($event)"
-        ></app-generic-table>
-      }
-
-      <!-- Form View -->
-      @if (isEditing()) {
-        <div class="max-w-2xl bg-white p-10 rounded-3xl shadow-xl border border-slate-100">
-           <h3 class="text-2xl font-bold text-slate-900 mb-8 border-l-4 border-indigo-600 pl-4">
-             {{ editMode() === 'create' ? 'Add New Color' : 'Update Color' }}
-           </h3>
-
-           <form [formGroup]="form" (ngSubmit)="save()" class="grid grid-cols-2 gap-6">
-              <div class="col-span-2">
-                <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Color Name</label>
-                <input formControlName="nombre" class="w-full bg-slate-50 border-slate-200 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-indigo-500 transition-all border border-slate-200" placeholder="e.g. Lavender"/>
-              </div>
-
-              <div class="col-span-2">
-                <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Hex Code</label>
-                <div class="flex gap-4">
-                  <input type="color" formControlName="codigo_hex" class="h-12 w-20 bg-slate-50 border-slate-200 rounded-xl outline-none cursor-pointer" />
-                  <input formControlName="codigo_hex" class="flex-1 bg-slate-50 border-slate-200 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-indigo-500 transition-all border border-slate-200" placeholder="#000000"/>
-                </div>
-              </div>
-
-              <div class="col-span-2 pt-6 flex gap-4">
-                <button type="button" (click)="isEditing.set(false)" class="flex-1 py-4 px-6 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold rounded-xl transition-all">
-                   Cancel
-                </button>
-                <button type="submit" [disabled]="form.invalid" class="flex-1 py-4 px-6 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-lg shadow-indigo-100 disabled:opacity-50 transition-all">
-                   Save Changes
-                </button>
-              </div>
-           </form>
-        </div>
-      }
-
-    </div>
-  `,
-  styles: []
+  templateUrl: './colores.component.html'
 })
 export class ColoresComponent implements OnInit {
   private api = inject(SupabaseService);
