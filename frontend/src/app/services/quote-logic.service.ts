@@ -23,24 +23,71 @@ export class QuoteLogicService {
   // Rendimientos catalog (loaded externally by the calculator component)
   public rendimientos = signal<Rendimiento[]>([]);
 
-  /**
-   * Returns the labor cost for the first rendimiento based on the given season.
-   * Falls back to 0 if no rendimientos are loaded.
-   */
-  getLaborCostForSeason(season: 'Regular' | 'Alta' | 'Local'): number {
-    const first = this.rendimientos()[0];
-    if (!first) return 0;
-    if (season === 'Regular') return first.regular;
-    if (season === 'Alta') return first.alta_temporada;
-    return first.local;
+  public productTypeError = computed(() => {
+    const flowerDetails = this.detalles().filter(d => d.tipo_item === 'flower');
+    if (flowerDetails.length === 0) return null;
+    
+    const type = this.determineProductType();
+    if (!type) {
+      return 'No fue posible determinar el tipo de producto.';
+    }
+    const r = this.rendimientos().find(x => x.nombre.toLowerCase() === type);
+    if (!r) {
+      return `No se encontró tarifa para: ${type}`;
+    }
+    return null;
+  });
+
+  public currentRendimientoName = computed(() => {
+    const flowerDetails = this.detalles().filter(d => d.tipo_item === 'flower');
+    if (flowerDetails.length === 0) return null;
+    const type = this.determineProductType();
+    if (!type) return null;
+    const r = this.rendimientos().find(x => x.nombre.toLowerCase() === type);
+    return r ? r.nombre : null;
+  });
+
+  determineProductType(): string | null {
+    const flowerDetails = this.detalles().filter(d => d.tipo_item === 'flower');
+    if (flowerDetails.length === 0) return null;
+
+    const uniqueVarieties = new Set(flowerDetails.map(d => d.id_referencia));
+    const uniqueColors = new Set(flowerDetails.map(d => (d.color || '').trim().toLowerCase()));
+
+    const numVarieties = uniqueVarieties.size;
+    const numColors = uniqueColors.size;
+
+    if (numVarieties === 1) {
+      if (numColors === 1) return 'ramo en paquete';
+      return 'consumer bunch';
+    } else if (numVarieties === 2 || numVarieties === 3) {
+      return 'bouquets';
+    } else if (numVarieties >= 4) {
+      return 'arreglo';
+    }
+    return null;
   }
 
   /**
-   * Applies the labor cost from the first rendimiento for the current season.
+   * Applies the labor cost from the appropriate rendimiento.
    */
   applyLaborCostFromRendimiento() {
     const season = this.cotizacion().temporada;
-    const laborCost = this.getLaborCostForSeason(season);
+    let laborCost = 0;
+    
+    const flowerDetails = this.detalles().filter(d => d.tipo_item === 'flower');
+    if (flowerDetails.length > 0) {
+      const type = this.determineProductType();
+      if (type) {
+        const r = this.rendimientos().find(x => x.nombre.toLowerCase() === type);
+        if (r) {
+          if (season === 'Regular') laborCost = r.regular;
+          else if (season === 'Alta') laborCost = r.alta_temporada;
+          else laborCost = r.local;
+        }
+      }
+    }
+    
     this.cotizacion.update(prev => ({ ...prev, mano_obra: laborCost }));
   }
 
@@ -84,6 +131,7 @@ export class QuoteLogicService {
       subtotal: defaultPrice
     };
     this.detalles.update(prev => [...prev, nuevo]);
+    this.applyLaborCostFromRendimiento();
   }
 
   /**
@@ -103,6 +151,7 @@ export class QuoteLogicService {
       copy[index] = updatedItem;
       return copy;
     });
+    this.applyLaborCostFromRendimiento();
   }
 
   /**
@@ -126,6 +175,7 @@ export class QuoteLogicService {
         return detalle;
       });
     });
+    this.applyLaborCostFromRendimiento();
   }
 
   /**
@@ -133,6 +183,7 @@ export class QuoteLogicService {
    */
   removeDetalle(index: number) {
     this.detalles.update(prev => prev.filter((_, i) => i !== index));
+    this.applyLaborCostFromRendimiento();
   }
 
   /**
