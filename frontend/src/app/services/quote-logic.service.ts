@@ -14,7 +14,8 @@ export class QuoteLogicService {
     margen_esperado: 35,
     temporada: 'Regular',
     caja_id: null,
-    costo_caja: 0
+    costo_caja: 0,
+    es_urbanstems: false
   });
 
   // Details list
@@ -198,7 +199,8 @@ export class QuoteLogicService {
       mano_obra: 0,
       margen_esperado: 35,
       caja_id: null,
-      costo_caja: 0
+      costo_caja: 0,
+      es_urbanstems: false
     });
   }
 }

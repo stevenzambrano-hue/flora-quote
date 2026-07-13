@@ -26,6 +26,11 @@ export class QuoteCalculatorComponent implements OnInit {
   colores = signal<any[]>([]);
   cajas = signal<any[]>([]);
 
+  filteredInsumos = computed(() => {
+    const isUrban = !!this.quoteLogic.cotizacion().es_urbanstems;
+    return this.insumos().filter(s => !!s.es_urbanstems === isUrban);
+  });
+
   ngOnInit() {
     this.loadCatalogs();
   }

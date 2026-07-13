@@ -24,4 +24,5 @@ export interface Cotizacion {
   costo_total_materiales?: number;
   costo_con_desperdicio?: number;
   precio_venta?: number;
+  es_urbanstems?: boolean;
 }
