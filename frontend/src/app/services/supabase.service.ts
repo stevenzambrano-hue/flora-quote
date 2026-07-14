@@ -1,15 +1,16 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SupabaseService {
   private http = inject(HttpClient);
-  // Base API URL
-  private apiUrl = 'http://localhost:3000/api';
-  private v1Url = 'http://localhost:3000/api/v1';
+  // Base API URL — resolved from environment (dev: localhost, prod: deployed backend)
+  private apiUrl = environment.apiUrl;
+  private v1Url = environment.apiV1Url;
 
   /**
    * Quotations
