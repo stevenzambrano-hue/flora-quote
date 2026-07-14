@@ -14,7 +14,24 @@ import rendimientoRoutes from './routes/rendimiento.routes.js';
 const app = express();
 
 // Middlewares
-app.use(cors());
+const allowedOrigins = [
+  'http://localhost:4200',
+  'https://flora-quote.vercel.app',      // dominio por defecto de Vercel
+  /^https:\/\/flora-quote.*\.vercel\.app$/ // previews de Vercel (PR deploys)
+];
+app.use(cors({
+  origin: (origin, callback) => {
+    // Permitir requests sin origin (Postman, curl, etc.)
+    if (!origin) return callback(null, true);
+    const allowed = allowedOrigins.some(o =>
+      typeof o === 'string' ? o === origin : o.test(origin)
+    );
+    if (allowed) callback(null, true);
+    else callback(new Error(`CORS blocked: ${origin}`));
+  },
+  credentials: true
+}));
+
 app.use(morgan('dev'));
 app.use(express.json());
 
